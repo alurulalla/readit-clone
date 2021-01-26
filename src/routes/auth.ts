@@ -29,11 +29,11 @@ const register = async (req: Request, res: Response) => {
     if (errors.length > 0) return res.status(400).json({ errors });
     await user.save();
 
-    // TODO: Return the user
+    // Return the user
     return res.json(user);
   } catch (err) {
     console.log(err);
-    res.status(500).json({
+    return res.status(500).json({
       error: err,
     });
   }
@@ -62,7 +62,7 @@ const login = async (req: Request, res: Response) => {
     if (!passwordMatches)
       return res.status(401).json({ password: 'Password is incorrect' });
 
-    const token = jwt.sign({ username }, process.env.JWT_SECRET);
+    const token = jwt.sign({ username }, process.env.JWT_SECRET!); // ! is used for strict check
 
     res.set(
       'Set-Cookie',
@@ -78,10 +78,11 @@ const login = async (req: Request, res: Response) => {
     return res.status(200).json({ user });
   } catch (err) {
     console.log(err);
+    return res.json({ error: 'Something went wrong' });
   }
 };
 
-const me = async (req: Request, res: Response) => {
+const me = async (_: Request, res: Response) => {
   return res.json(res.locals.user);
 };
 

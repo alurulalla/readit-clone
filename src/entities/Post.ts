@@ -1,4 +1,3 @@
-import { classToPlain, Exclude } from 'class-transformer';
 import {
   BeforeInsert,
   Column,
@@ -8,7 +7,8 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { makeid, slugify } from '../util/helpers';
+import { makeId, slugify } from '../util/helpers';
+import Comment from './Comment';
 
 import Entity from './Entity';
 import Sub from './Sub';
@@ -46,9 +46,12 @@ export class Post extends Entity {
   @JoinColumn({ name: 'subName', referencedColumnName: 'name' })
   sub: Sub;
 
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
+
   @BeforeInsert()
   makeIdAndSlug() {
-    this.identifier = makeid(7);
+    this.identifier = makeId(7);
     this.slug = slugify(this.title);
   }
 }
