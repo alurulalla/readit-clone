@@ -7,6 +7,13 @@ import cookie from 'cookie';
 import User from './../entities/User';
 import auth from '../middleware/auth';
 
+const mapErrors = (errors: Object[]) => {
+  return errors.reduce((pre: any, err: any) => {
+    pre[err.property] = Object.entries(err.constraints)[0][1];
+    return pre;
+  }, {});
+};
+
 const register = async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
 
@@ -26,7 +33,9 @@ const register = async (req: Request, res: Response) => {
 
     // Validate the user object
     errors = await validate(user);
-    if (errors.length > 0) return res.status(400).json({ errors });
+
+    if (errors.length > 0) return res.status(400).json(mapErrors(errors));
+
     await user.save();
 
     // Return the user
