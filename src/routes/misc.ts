@@ -25,7 +25,7 @@ const vote = async (req: Request, res: Response) => {
       // IF there is a comment identifier find vote by comment
       comment = await Comment.findOneOrFail({ identifier: commentIdentifier });
       console.log(comment);
-      vote = await Vote.findOneOrFail({ user, comment });
+      vote = await Vote.findOne({ user, comment });
     } else {
       // Else find vote by post
       vote = await Vote.findOne({ user, post });
@@ -52,9 +52,12 @@ const vote = async (req: Request, res: Response) => {
     post = await Post.findOneOrFail(
       { identifier, slug },
       {
-        relations: ['comments', 'sub', 'votes'],
+        relations: ['comments', 'comments.votes', 'sub', 'votes'],
       }
     );
+
+    post.setUserVote(user);
+    post.comments.forEach((c) => c.setUserVote(user));
 
     return res.json(post);
   } catch (error) {
