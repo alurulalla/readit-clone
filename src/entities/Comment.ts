@@ -11,7 +11,7 @@ import {
 import { makeId } from '../util/helpers';
 
 import Entity from './Entity';
-import { Post } from './Post';
+import Post from './Post';
 import User from './User';
 import Vote from './Vote';
 
