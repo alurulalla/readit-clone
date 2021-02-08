@@ -4,6 +4,7 @@ import { Post } from '../entities/Post';
 import User from '../entities/User';
 import Vote from '../entities/Vote';
 import auth from '../middleware/auth';
+import user from '../middleware/user';
 
 const router = Router();
 
@@ -24,7 +25,6 @@ const vote = async (req: Request, res: Response) => {
     if (commentIdentifier) {
       // IF there is a comment identifier find vote by comment
       comment = await Comment.findOneOrFail({ identifier: commentIdentifier });
-      console.log(comment);
       vote = await Vote.findOne({ user, comment });
     } else {
       // Else find vote by post
@@ -66,6 +66,6 @@ const vote = async (req: Request, res: Response) => {
   }
 };
 
-router.post('/vote', auth, vote);
+router.post('/vote', user, auth, vote);
 
 export default router;
