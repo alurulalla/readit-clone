@@ -16,7 +16,7 @@ axios.defaults.withCredentials = true;
 const fetcher = async (url: string) => {
   try {
     const res = await axios.get(url);
-    return res;
+    return res.data;
   } catch (err) {
     throw err.response.data;
   }
@@ -29,7 +29,7 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <SWRConfig
       value={{
-        fetcher: (url) => axios.get(url).then((res) => res.data),
+        fetcher,
       }}
     >
       <AuthProvider>

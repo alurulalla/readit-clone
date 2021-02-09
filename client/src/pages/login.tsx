@@ -35,7 +35,7 @@ export default function Register() {
 
       dispatch('LOGIN', res.data);
 
-      router.push('/');
+      router.back();
     } catch (err) {
       console.log(err.response.data);
       setErrors(err.response.data);
