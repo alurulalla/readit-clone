@@ -8,14 +8,16 @@ import PostCard from '../../components/PostCard';
 import { Sub } from '../../types';
 import { useRouter } from 'next/router';
 import { useAuthState } from '../../context/auth';
+import { useAuthDispatch } from '../../context/auth';
 import axios from 'axios';
 import Sidebar from '../../components/Sidebar';
 
 export default function SubPage() {
   // Local state
-  const [ownSub, setOwnSub] = useState(false);
+  // const [ownSub, setOwnSub] = useState(false);
   // Global state
-  const { authenticated, user } = useAuthState();
+  const { authenticated, user, isOwnSub } = useAuthState();
+  const dispatch = useAuthDispatch();
   // Utils
   const fileInputRef = createRef<HTMLInputElement>();
   const router = useRouter();
@@ -27,12 +29,15 @@ export default function SubPage() {
   );
 
   useEffect(() => {
+    console.log(isOwnSub);
+    revalidate();
     if (!sub) return;
-    setOwnSub(authenticated && user.username === sub.username);
+    // setOwnSub(authenticated && user?.username === sub?.username);
+    dispatch('OWN_SUB', authenticated && user?.username === sub?.username);
   }, [sub]);
 
   const openFileInput = (type: string) => {
-    if (!ownSub) return;
+    if (!isOwnSub) return;
     fileInputRef.current.name = type;
     fileInputRef.current.click();
   };
@@ -86,7 +91,7 @@ export default function SubPage() {
             {/* Banner Image */}
             <div
               className={classNames('bg-blue-500', {
-                'cursor-pointer': ownSub,
+                'cursor-pointer': isOwnSub,
               })}
               onClick={() => openFileInput('banner')}
             >
@@ -102,7 +107,7 @@ export default function SubPage() {
                   }}
                 ></div> */}
                   <Image
-                    src={sub.bannerUrl}
+                    src={sub?.bannerUrl}
                     layout='responsive'
                     width={700}
                     height={100}
@@ -118,10 +123,10 @@ export default function SubPage() {
               <div className='container relative flex'>
                 <div className='absolute' style={{ top: -15 }}>
                   <Image
-                    src={sub.imageUrl}
+                    src={sub?.imageUrl}
                     alt='Sub'
                     className={classNames('rounded-full', {
-                      'cursor-pointer': ownSub,
+                      'cursor-pointer': isOwnSub,
                     })}
                     onClick={() => openFileInput('image')}
                     width={70}
@@ -130,10 +135,10 @@ export default function SubPage() {
                 </div>
                 <div className='pt-1 pl-24'>
                   <div className='flex items-center'>
-                    <div className='mb-1 text-3xl font-bold'>{sub.title}</div>
+                    <div className='mb-1 text-3xl font-bold'>{sub?.title}</div>
                   </div>
                   <p className='text-sm font-bold text-gray-600'>
-                    /r/{sub.name}
+                    /r/{sub?.name}
                   </p>
                 </div>
               </div>

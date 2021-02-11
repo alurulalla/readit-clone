@@ -6,6 +6,7 @@ interface State {
   authenticated: boolean;
   user: User | undefined;
   loading: boolean;
+  isOwnSub: boolean;
 }
 
 interface Action {
@@ -17,6 +18,7 @@ const StateContext = createContext<State>({
   authenticated: false,
   user: null,
   loading: true,
+  isOwnSub: false,
 });
 
 const DispatchContext = createContext(null);
@@ -40,6 +42,11 @@ const reducer = (state: State, { type, payload }: Action) => {
         ...state,
         loading: false,
       };
+    case 'OWN_SUB':
+      return {
+        ...state,
+        isOwnSub: payload,
+      };
     default:
       throw new Error(`Unknown action type: ${type}`);
   }
@@ -50,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user: null,
     authenticated: false,
     loading: true,
+    isOwnSub: false,
   });
 
   const dispatch = (type: string, payload?: any) =>
