@@ -12,13 +12,14 @@ import Sidebar from '../../../../components/Sidebar';
 import { Comment, Post } from '../../../../types';
 import { useAuthState } from '../../../../context/auth';
 import ActionButton from '../../../../components/ActionButton';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 dayjs.extend(relativeTime);
 
 export default function PostPage() {
   // Local state
   const [newComment, setNewComment] = useState('');
+  const [description, setDescription] = useState('');
   // Global state
   const { authenticated, user } = useAuthState();
   // Utils
@@ -34,6 +35,13 @@ export default function PostPage() {
   );
 
   if (error) router.push('/');
+
+  useEffect(() => {
+    if(!post) return;
+    let desc = post.body || post.title;
+    desc = desc.substring(0,158).concat('..'); // Hello World..
+    setDescription(desc);
+  }, [post])
 
   const vote = async (value: number, comment?: Comment) => {
     //   If not logged in redirect to login page
@@ -76,6 +84,11 @@ export default function PostPage() {
     <>
       <Head>
         <title>{post?.title}</title>
+        <meta name='description' content={description}></meta>
+        <meta property='og:title' content={post?.title} />
+        <meta property='og:description' content={description} />
+        <meta property='twitter:title' content={post?.title} />
+        <meta property='twitter:description' content={description} />
       </Head>
       {sub && (
         <Link href={`/r/${sub}`}>

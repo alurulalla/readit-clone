@@ -8,16 +8,14 @@ import PostCard from '../../components/PostCard';
 import { Sub } from '../../types';
 import { useRouter } from 'next/router';
 import { useAuthState } from '../../context/auth';
-import { useAuthDispatch } from '../../context/auth';
 import axios from 'axios';
 import Sidebar from '../../components/Sidebar';
 
 export default function SubPage() {
   // Local state
-  // const [ownSub, setOwnSub] = useState(false);
+  const [ownSub, setOwnSub] = useState(false);
   // Global state
-  const { authenticated, user, isOwnSub } = useAuthState();
-  const dispatch = useAuthDispatch();
+  const { authenticated, user } = useAuthState();
   // Utils
   const fileInputRef = createRef<HTMLInputElement>();
   const router = useRouter();
@@ -29,15 +27,12 @@ export default function SubPage() {
   );
 
   useEffect(() => {
-    console.log(isOwnSub);
-    revalidate();
     if (!sub) return;
-    // setOwnSub(authenticated && user?.username === sub?.username);
-    dispatch('OWN_SUB', authenticated && user?.username === sub?.username);
-  }, [sub]);
+    setOwnSub(authenticated && user?.username === sub?.username);
+  }, [sub, user]);
 
   const openFileInput = (type: string) => {
-    if (!isOwnSub) return;
+    if (!ownSub) return;
     fileInputRef.current.name = type;
     fileInputRef.current.click();
   };
@@ -69,7 +64,7 @@ export default function SubPage() {
     postMarkup = <p className='text-lg text-center'>No posts submitted yet</p>;
   } else {
     postMarkup = sub.posts.map((post) => (
-      <PostCard key={post.identifier} post={post} />
+      <PostCard key={post.identifier} post={post} revalidate={revalidate} />
     ));
   }
 
@@ -91,7 +86,7 @@ export default function SubPage() {
             {/* Banner Image */}
             <div
               className={classNames('bg-blue-500', {
-                'cursor-pointer': isOwnSub,
+                'cursor-pointer': ownSub,
               })}
               onClick={() => openFileInput('banner')}
             >
@@ -126,7 +121,7 @@ export default function SubPage() {
                     src={sub?.imageUrl}
                     alt='Sub'
                     className={classNames('rounded-full', {
-                      'cursor-pointer': isOwnSub,
+                      'cursor-pointer': ownSub,
                     })}
                     onClick={() => openFileInput('image')}
                     width={70}

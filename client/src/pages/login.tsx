@@ -34,7 +34,6 @@ export default function Register() {
       const res = await axios.post('/auth/login', data, config);
 
       dispatch('LOGIN', res.data);
-
       router.back();
     } catch (err) {
       console.log(err.response.data);
