@@ -26,7 +26,7 @@ export default function PostPage() {
   const router = useRouter();
   const { identifier, sub, slug } = router.query;
 
-  const { data: post, error } = useSWR<Post>(
+  const { data: post, error, revalidate: postRevalidate } = useSWR<Post>(
     identifier && slug ? `/posts/${identifier}/${slug}` : null
   );
 
@@ -37,11 +37,11 @@ export default function PostPage() {
   if (error) router.push('/');
 
   useEffect(() => {
-    if(!post) return;
+    if (!post) return;
     let desc = post.body || post.title;
-    desc = desc.substring(0,158).concat('..'); // Hello World..
+    desc = desc.substring(0, 158).concat('..'); // Hello World..
     setDescription(desc);
-  }, [post])
+  }, [post]);
 
   const vote = async (value: number, comment?: Comment) => {
     //   If not logged in redirect to login page
@@ -60,6 +60,7 @@ export default function PostPage() {
         value,
       });
       revalidate();
+      postRevalidate();
     } catch (err) {
       console.log(err);
     }
